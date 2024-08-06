@@ -1,0 +1,5 @@
+enum class InfluencerType{
+    BUSINESS_INFLUENCER,
+    FASHION_INFLUENCER,
+    BLOGGER_INFLUENCER,
+};
