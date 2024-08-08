@@ -26,4 +26,9 @@ public:
     virtual int calculateCampaignPrice() const = 0;
     std::string getName() const;
     virtual InfluencerType getType() const = 0;
+    size_t getParticipationsCount() const;
+    void sortParticipations();
+    double getIncome() const;
+    size_t getFollowers() const;
+    void printParticipations() const;
 };

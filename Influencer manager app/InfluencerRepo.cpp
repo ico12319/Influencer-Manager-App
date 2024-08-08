@@ -1,6 +1,14 @@
 #include <stdio.h>
 #include "InfluencerRepo.h"
 
+static bool compareinfluencers(Influencer* inf1,Influencer* inf2){
+    if (inf1->getIncome() != inf2->getIncome()) {
+           return inf1->getIncome() > inf2->getIncome();
+       }
+       return inf1->getFollowers() > inf2->getFollowers();
+}
+
+
 InfluencerRepo::InfluencerRepo(){
     this->capacity = 8;
     this->influencers = new Influencer*[this->capacity];
@@ -87,6 +95,9 @@ bool InfluencerRepo::containsInfluencer(Influencer* influencer) const{
 
 void InfluencerRepo::addModel(Influencer* influencer){
     if(!containsInfluencer(influencer)){
+        if(size >= capacity)
+            resize(capacity * 2);
+        
         influencers[size] = influencer;
         size++;
     }
@@ -95,6 +106,8 @@ void InfluencerRepo::addModel(Influencer* influencer){
 bool InfluencerRepo::remove(Influencer* influencer){
     try{
         size_t index = getInfluencerIndex(influencer);
+        delete influencers[index];
+        influencers[index] = nullptr;
         for(size_t i = index;i<size - 1;i++)
             influencers[i] = influencers[i+1];
         
@@ -121,4 +134,39 @@ Influencer* InfluencerRepo::findByName(const std::string& name) const{
                 return influencers[i];
         }
         return nullptr;
+}
+
+
+Influencer** InfluencerRepo::getInfluencers() const{
+    return influencers;
+}
+
+
+void InfluencerRepo::sortInfluencersByIncomeThenByFollowers(){
+    size_t count = getSize();
+    std::sort(influencers,influencers + count,compareinfluencers);
+}
+
+size_t InfluencerRepo::getSize() const{
+    return size;
+}
+
+
+Influencer* InfluencerRepo::getInfluencerOnIndex(size_t index) const{
+    if(index > size)
+        throw std::invalid_argument("Invalid index");
+    return influencers[index];
+}
+
+
+void InfluencerRepo::printInfluencersAndActiveCampaigns(){
+    for(int i = 0;i<size;i++){
+        std::cout<<influencers[i]->getName() << " - "<<"Followers: " << influencers[i]->getFollowers()<<", Total income: " << influencers[i]->getIncome()<<std::endl;
+        influencers[i]->sortParticipations();
+        if(influencers[i]->getParticipationsCount() > 0){
+            std::cout<<"Active Campaigns: "<<std::endl;
+            influencers[i]->printParticipations();
+        }
+        
+    }
 }

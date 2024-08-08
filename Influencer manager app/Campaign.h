@@ -22,4 +22,6 @@ public:
     void engage(Influencer* influencer);
     bool containsInfluencer(Influencer* influencer) const;
     virtual CampaignType getType() const = 0;
+    double getBudget() const;
+    std::vector<std::string> getContributors() const;
 };

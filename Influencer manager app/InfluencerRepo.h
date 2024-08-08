@@ -25,4 +25,9 @@ public:
     void addModel(Influencer* influencer);
     bool remove(Influencer* influencer);
     Influencer* findByName(const std::string& name) const;
+    Influencer** getInfluencers() const;
+    void sortInfluencersByIncomeThenByFollowers();
+    size_t getSize() const;
+    Influencer* getInfluencerOnIndex(size_t index) const;
+    void printInfluencersAndActiveCampaigns();
 };

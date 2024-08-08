@@ -77,3 +77,32 @@ size_t Influencer::getBrandIndex(const std::string& brand) const{
 std::string Influencer::getName() const{
     return name;
 }
+
+
+size_t Influencer::getParticipationsCount() const{
+    return participations.size();
+}
+
+
+void Influencer::sortParticipations(){
+    std::sort(participations.begin(),participations.end());
+}
+
+
+double Influencer::getIncome() const{
+    return income;
+}
+
+size_t Influencer::getFollowers() const{
+    return followers;
+}
+
+
+void Influencer::printParticipations() const{
+    const size_t size = participations.size();
+    for(int i = 0;i<size;i++){
+        std::cout<<participations[i]<<std::endl;
+    }
+}
+
+

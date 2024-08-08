@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "Controller.h"
 
-
 static bool isEligible(const CampaignType& campaignType,const InfluencerType& influencerType){
     if(campaignType == CampaignType::PRODUCT_CAMPAIGN && (influencerType == InfluencerType::BUSINESS_INFLUENCER || influencerType == InfluencerType::FASHION_INFLUENCER)){
         return true;
@@ -29,7 +28,6 @@ std::string Controller::registerInfluencer(const std::string& typeName, const st
     else if(typeName == "BloggerInfluencer")
         influencer = new BloggerInfluencer(userName,followers);
     else{
-        delete influencer;
         return typeName + " has not passed validation.";
     }
     influencers.addModel(influencer);
@@ -46,7 +44,6 @@ std::string Controller::beginCampaign(const std::string& typeName, const std::st
     else if(typeName == "ServiceCampaign")
         campaign = new ServiceCampaign(brand);
     else{
-        delete campaign;
         return typeName + " is not a valid campaign in the application.";
     }
     campaigns.addModel(campaign);
@@ -81,4 +78,69 @@ std::string Controller::attractInfluencer(const std::string& brand, const std::s
     catch(const std::logic_error& e){
         return "The budget for " + brand + " is insufficient to engage " + userName + ".";
     }
+}
+
+
+std::string Controller::fundCampaign(const std::string& brand, const std::string& amountStr) const{
+    Campaign* campaign = campaigns.findByName(brand);
+    if(campaign == nullptr)
+        return "Trying to fund an invalid campaign.";
+    
+    double amount;
+    try{
+        amount = std::stod(amountStr);
+    }
+    catch(...){
+        return "Funding amount must be a valid number.";
+    }
+    
+    try{
+        campaign->gain(amount);
+        return brand + " campaign has been successfully funded with " + amountStr + " $";
+    }
+    catch(...){
+        return "Funding amount must be greater than zero.";
+    }
+    
+    
+}
+
+
+std::string Controller::closeCampaign(const std::string& brand){
+    Campaign* campaign = campaigns.findByName(brand);
+    if(campaign == nullptr)
+        return "Trying to close an invalid campaign.";
+    double budget = campaign->getBudget();
+    if(budget <= 10000)
+        return brand + " campaign cannot be closed as it has not met its financial targets.";
+    std::vector<std::string> contributors = campaign->getContributors();
+    const size_t size = contributors.size();
+    for(size_t i = 0;i<size;i++){
+        Influencer* infl = influencers.findByName(contributors[i]);
+        if(infl){
+            infl->earnFee(2000);
+            infl->endParticipation(brand);
+        }
+    }
+    campaigns.remove(campaign);
+    return brand + " campaign has reached its target.";
+}
+
+
+std::string Controller::concludeAppContract(const std::string& userName){
+    Influencer* infl = influencers.findByName(userName);
+    if(infl == nullptr)
+        return userName + " has still not signed a contract";
+    size_t activeCampaigns = infl->getParticipationsCount();
+    if(activeCampaigns > 0)
+        return userName + " cannot conclude contract while enrolled in active campaigns.";
+    
+    influencers.remove(infl);
+    return userName + " concluded their contract.";
+}
+
+
+void Controller::applicationReportCommand() {
+    influencers.sortInfluencersByIncomeThenByFollowers();
+    influencers.printInfluencersAndActiveCampaigns();
 }

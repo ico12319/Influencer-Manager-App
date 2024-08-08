@@ -58,3 +58,12 @@ bool Campaign::containsInfluencer(Influencer* influencer) const{
     }
     return false;
 }
+
+double Campaign::getBudget() const{
+    return budget;
+}
+
+
+std::vector<std::string> Campaign::getContributors() const{
+    return contributors;
+}

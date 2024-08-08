@@ -77,6 +77,8 @@ void CampaignRepo::resize(size_t newCap){
 
 void CampaignRepo::addModel(Campaign* campaign){
     if(!containsCampaign(campaign)){
+        if(size >= capacity)
+            resize(capacity * 2);
         campaigns[size] = campaign;
         size++;
     }
@@ -91,7 +93,7 @@ bool CampaignRepo::containsCampaign(Campaign* campaign) const{
 }
 
 Campaign* CampaignRepo::findByName(const std::string& brand) const{
-    for(int i = 0;i<size;i++){
+    for(size_t i = 0;i<size;i++){
         if(campaigns[i]->getName() == brand)
             return campaigns[i];
     }
@@ -101,8 +103,11 @@ Campaign* CampaignRepo::findByName(const std::string& brand) const{
 bool CampaignRepo::remove(Campaign* campaign){
     try{
         size_t index = getCampaignByIndex(campaign);
+        delete campaigns[index];
         for(size_t i = index;i<size - 1;i++)
             campaigns[i] = campaigns[i+1];
+        
+        campaigns[size - 1] = nullptr;
         size--;
         return true;
     }
